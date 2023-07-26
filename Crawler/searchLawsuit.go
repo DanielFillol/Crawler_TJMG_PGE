@@ -152,10 +152,7 @@ func SearchLawsuit(driver selenium.WebDriver, searchLink string, lawsuit string)
 }
 
 func formatNumber(lawsuit string) (lawsuitNumber, error) {
-	decomposedCNJ, err := CNJ.DecomposeCNJ(lawsuit)
-	if err != nil {
-		return lawsuitNumber{}, err
-	}
+	decomposedCNJ, _ := CNJ.DecomposeCNJ(lawsuit)
 
 	return lawsuitNumber{
 		number1: decomposedCNJ.LawsuitNumber,

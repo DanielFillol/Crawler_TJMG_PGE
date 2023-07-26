@@ -58,6 +58,7 @@ func GetLawsuitCover(htmlPgSrc *html.Node, lawsuitNumber string) (LawsuitCover, 
 	var judgePosition string
 	var legalCompetence string
 
+	//*[@id="maisDetalhes"]/div[1]/dl/dd/text()
 	totalNodes := htmlquery.Find(htmlPgSrc, "//*[@id=\"maisDetalhes\"]/dl/dt")
 	for i, node := range totalNodes {
 		title := htmlquery.InnerText(node)
@@ -66,8 +67,11 @@ func GetLawsuitCover(htmlPgSrc *html.Node, lawsuitNumber string) (LawsuitCover, 
 		if title == titleClass {
 			class = information
 		} else if title == titleSubject {
-			information2 := strings.ReplaceAll(strings.TrimSpace(htmlquery.InnerText(htmlquery.FindOne(htmlPgSrc, "//*[@id=\"maisDetalhes\"]/dl/dd["+strconv.Itoa(i+1)+"]/ul/li"))), "\n", "")
-			subject = information2
+			nodes := htmlquery.Find(htmlPgSrc, "//*[@id=\"maisDetalhes\"]/dl/dd["+strconv.Itoa(i+1)+"]/ul/li")
+			if len(nodes) != 0 {
+				information2 := strings.ReplaceAll(strings.TrimSpace(htmlquery.InnerText(nodes[0])), "\n", "")
+				subject = information2
+			}
 		} else if title == titleLawsuitRefer {
 			lawsuitRefer = information
 		} else if title == titleJurisdiction {
@@ -86,7 +90,15 @@ func GetLawsuitCover(htmlPgSrc *html.Node, lawsuitNumber string) (LawsuitCover, 
 			legalProtection = information
 		} else if title == titlePriority {
 			priority = information
-		} else if title == titleDistrict {
+		}
+	}
+
+	totalNodes2 := htmlquery.Find(htmlPgSrc, "//*[@id=\"maisDetalhes\"]/div")
+	for _, node2 := range totalNodes2 {
+		title := htmlquery.InnerText(node2)
+		information := strings.ReplaceAll(strings.TrimSpace(htmlquery.InnerText(htmlquery.FindOne(node2, "/dl/dd/text()"))), "\n", "")
+
+		if title == titleDistrict {
 			district = information
 		} else if title == titleJudgePosition {
 			judgePosition = information
