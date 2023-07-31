@@ -12,6 +12,7 @@ import (
 )
 
 const (
+	xpathResults     = "/html/body/div[5]/div/div/div/div[2]/form/div[2]/div/table/tfoot/tr/td/div/div[2]/span"
 	xpathSearchBtt   = "//*[@id=\"fPP:searchProcessos\"]"
 	xpathNumber1     = "//*[@id=\"fPP:numeroProcesso:numeroSequencial\"]"
 	xpathNumber2     = "//*[@id=\"fPP:numeroProcesso:numeroDigitoVerificador\"]"
@@ -36,6 +37,7 @@ func SearchLawsuit(driver selenium.WebDriver, searchLink string, lawsuit string)
 
 	if url != searchLink {
 		err := driver.Get(searchLink)
+		time.Sleep(1 * time.Second)
 		if err != nil {
 			return nil, errors.New("url unavailable")
 		}
@@ -92,12 +94,28 @@ func SearchLawsuit(driver selenium.WebDriver, searchLink string, lawsuit string)
 	//there is a delay of 1.5s to load the page
 	time.Sleep(1500 * time.Millisecond)
 
+	textResults, err := driver.FindElement(selenium.ByXPATH, xpathResults)
+	if err != nil {
+		log.Println("could not find result quantity")
+		return nil, errors.New("could not find result quantity")
+	}
+
+	textResult, err := textResults.Text()
+	if err != nil {
+		log.Println("could not find result quantity")
+		return nil, errors.New("could not find result quantity")
+	}
+
+	if textResult[0:1] == "0" {
+		return nil, errors.New("err:" + textResult)
+	}
+
 	exist, err := existLawsuit(driver, xpathReturn)
 	if err != nil {
 		return nil, errors.New("err:" + err.Error())
 	}
 	if exist != true {
-		log.Println("could not find lawsuit")
+		log.Println("could not find lawsuit" + lawsuit)
 		return nil, errors.New("could not find lawsuit")
 	}
 
