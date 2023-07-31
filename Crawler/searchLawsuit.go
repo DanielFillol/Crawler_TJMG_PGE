@@ -146,6 +146,9 @@ func SearchLawsuit(driver selenium.WebDriver, searchLink string, lawsuit string)
 		return nil, errors.New("could not switch window")
 	}
 
+	//Apparently it was too fast to get all html information
+	time.Sleep(500 * time.Millisecond)
+
 	pageSource, err := driver.PageSource()
 	if err != nil {
 		return nil, errors.New("could not get page source")
